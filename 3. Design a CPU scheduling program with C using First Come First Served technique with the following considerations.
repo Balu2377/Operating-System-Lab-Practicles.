@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_PROCESSES 10
+typedef struct Process {
+  int arrival_time;
+  int burst_time;
+} Process;
+void schedule_fcfs(Process processes[], int n) {
+  int current_time = 0;
+  int waiting_time = 0;
+  int turnaround_time = 0;
+  for (int i = 0; i < n; i++) {
+    current_time += processes[i].burst_time;
+    turnaround_time += current_time - processes[i].arrival_time;
+    waiting_time += current_time - processes[i].arrival_time - processes[i].burst_time;
+  }
+  printf("Average waiting time: %f\n", (double)waiting_time / n);
+  printf("Average turnaround time: %f\n", (double)turnaround_time / n);
+}
+int main() {
+  Process processes[MAX_PROCESSES];
+  for (int i = 0; i < MAX_PROCESSES; i++) {
+    processes[i].arrival_time = 0;
+    processes[i].burst_time = rand() % 10 + 1;
+  }
+
+  schedule_fcfs(processes, MAX_PROCESSES);
+
+  return 0;
+}
