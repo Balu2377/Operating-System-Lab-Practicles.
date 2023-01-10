@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_PROCESSES 100
+typedef struct {
+  int arrival_time;
+  int burst_time;
+  int waiting_time;
+  int turnaround_time;
+} Process;
+int compare(const void *a, const void *b) {
+  Process *p1 = (Process *)a;
+  Process *p2 = (Process *)b;
+  return p1->burst_time - p2->burst_time;
+}
+int main() {
+  Process processes[MAX_PROCESSES];
+  int num_processes;
+  printf("Enter the number of processes: ");
+  scanf("%d", &num_processes);
+  printf("Enter the arrival time and burst time of each process:\n");
+  for (int i = 0; i < num_processes; i++) {
+    scanf("%d %d", &processes[i].arrival_time, &processes[i].burst_time);
+  }
+  qsort(processes, num_processes, sizeof(Process), compare);
+  processes[0].waiting_time = 0;
+  for (int i = 1; i < num_processes; i++) {
+    processes[i].waiting_time = processes[i - 1].waiting_time + processes[i - 1].burst_time;
+  }
+  for (int i = 0; i < num_processes; i++) {
+    processes[i].turnaround_time = processes[i].waiting_time + processes[i].burst_time;
+  }
+  float avg_waiting_time = 0;
+  float avg_turnaround_time = 0;
+  printf("Process\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\n");
+  for (int i = 0; i < num_processes; i++) {
+    avg_waiting_time += processes[i].waiting_time;
+    avg_turnaround_time += processes[i].turnaround_time;
+    printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\n", i + 1, processes[i].arrival_time, processes[i].burst_time, processes[i].waiting_time, processes[i].turnaround_time);
+  }
+  avg_waiting_time /= num_processes;
+  avg_turnaround_time /= num_processes;
+  printf("Average waiting time: %.2f\n", avg_waiting_time);
+  printf("Average turnaround time: %.2f\n", avg_turnaround_time);
+  return 0;
+}
