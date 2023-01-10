@@ -1,0 +1,15 @@
+import multiprocessing
+a = multiprocessing.Value('i', 0)
+def process1():
+    a.value += 1
+    print(f'Process 1: s_v = {a.value}')
+def process2():
+    print(f'Process 2: s_v = {a.value}')
+if __name__ == '__main__':
+    p1 = multiprocessing.Process(target=process1)
+    p2 = multiprocessing.Process(target=process2)
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
+    print(f'Final value of shared_variable = {a.value}')
