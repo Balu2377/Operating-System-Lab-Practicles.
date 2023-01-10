@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#define MSG_SIZE 128
+typedef struct {
+    long mtype;
+    char mtext[MSG_SIZE];
+} message_buf;
+int main() {
+    key_t key;
+    int msg_id;
+    message_buf msg;
+    key = ftok("/tmp", 'B');
+    msg_id = msgget(key, 0666 | IPC_CREAT);
+    if (msg_id < 0) {
+        perror("msgget");
+        exit(1);
+    }
+    msg.mtype = 1;
+    strcpy(msg.mtext, "HI BALU");
+    if (msgsnd(msg_id, &msg, sizeof(msg.mtext), 0) < 0) {
+        perror("msgsnd");
+        exit(1);
+    }
+    printf("Sent message: %s\n", msg.mtext);
+    if (msgrcv(msg_id, &msg, sizeof(msg.mtext), 0, 0) < 0) {
+        perror("msgrcv");
+        exit(1);
+    }
+    printf("Received message: %s\n", msg.mtext);
+    if (msgctl(msg_id, IPC_RMID, NULL) < 0) {
+        perror("msgctl");
+        exit(1);
+    }
+    return 0;
+}
