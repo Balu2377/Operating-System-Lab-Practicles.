@@ -1,0 +1,22 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+void* second_thread_func(void* arg) {
+    int i;
+    for (i = 0; i < 10; i++) {
+        printf("This is the second thread.\n");
+        sleep(1);
+    }
+    return NULL;
+}
+int main() {
+    pthread_t second_thread;
+    pthread_create(&second_thread, NULL, second_thread_func, NULL);
+    int i;
+    for (i = 0; i < 10; i++) {
+        printf("This is the main thread.\n");
+        sleep(1);
+    }  pthread_join(second_thread, NULL);
+    
+    return 0;
+}
