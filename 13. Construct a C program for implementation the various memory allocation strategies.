@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_BLOCKS 100
+struct memory_block {
+    int size;
+    int status; 
+};
+struct memory_block memory[MAX_BLOCKS];
+int num_blocks = 0;
+void init_memory() {
+    int i;
+    for (i = 0; i < MAX_BLOCKS; i++) {
+        memory[i].size = 0;
+        memory[i].status = 0;
+    }
+}
+void add_block(int size) {
+    memory[num_blocks].size = size;
+    memory[num_blocks].status = 0;
+    num_blocks++;
+}
+void* first_fit_alloc(int size) {
+    int i;
+    for (i = 0; i < num_blocks; i++) {
+        if (memory[i].status == 0 && memory[i].size >= size) {
+            memory[i].status = 1;
+            return (void*) &memory[i];
+        }
+    }
+    return NULL;
+}
+void dealloc(void* ptr) {
+    int i;
+    for (i = 0; i < num_blocks; i++) {
+        if (&memory[i] == ptr) {
+            memory[i].status = 0;
+            break;
+        }
+    }
+}
+
+int main() {
+    init_memory();
+    add_block(100);
+    add_block(500);
+    add_block(300);
+    void* a = first_fit_alloc(50);
+    void* b = first_fit_alloc(200);
+    printf("Allocated memory: %p\n", a);
+    printf("Allocated memory: %p\n", b);
+    dealloc(a);
+    dealloc(b);
+    return 0;
+}
