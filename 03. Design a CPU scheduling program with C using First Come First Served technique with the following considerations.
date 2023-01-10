@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MP 10
+typedef struct Process {
+  int at;
+  int bt;
+} Process;
+void schedule_fcfs(Process processes[], int n) {
+  int ct = 0;
+  int wt = 0;
+  int tt = 0;
+  for (int i = 0; i < n; i++) {
+    ct += processes[i].bt;
+    tt += ct - processes[i].at;
+    wt+= ct - processes[i].at - processes[i].bt;
+  }
+  printf("Average waiting time: %f\n", (double)wt/ n);
+  printf("Average turnaround time: %f\n", (double)tt / n);
+}
+int main() {
+  Process processes[MP];
+  for (int i = 0; i < MP; i++) {
+    processes[i].at= 0;
+    processes[i].bt = rand() % 10 + 1;
+  }
+
+  schedule_fcfs(processes, MP);
+
+  return 0;
+}
