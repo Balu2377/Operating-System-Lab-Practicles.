@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+int main(int argc, char *argv[]) {
+    DIR *dir;
+    struct dirent *entry;
+    char source_path[100], target_path[100];
+    if (argc != 3) {
+        printf("Usage: %s <source_directory> <target_directory>\n", argv[0]);
+        return 1;
+}
+    dir = opendir(argv[1]);
+    if (dir == NULL) {
+        printf("Unable to open directory: %s\n", argv[1]);
+        return 1;
+    }
+    mkdir(argv[2], 0777);
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+        sprintf(source_path, "%s/%s", argv[1], entry->d_name);
+        sprintf(target_path, "%s/%s", argv[2], entry->d_name);
+        rename(source_path, target_path);
+    }
+    closedir(dir);
+    return 0;
+}
