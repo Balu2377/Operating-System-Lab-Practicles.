@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct employee {
+    int id;
+    char name[50];
+    float salary;
+};
+void write_employee(FILE *fp, struct employee emp) {
+    fseek(fp, emp.id*sizeof(struct employee), SEEK_SET);
+    fwrite(&emp, sizeof(struct employee), 1, fp);
+}
+struct employee read_employee(FILE *fp, int id) {
+    struct employee emp;
+    fseek(fp, id*sizeof(struct employee), SEEK_SET);
+    fread(&emp, sizeof(struct employee), 1, fp);
+    return emp;
+}
+int main() {
+    FILE *fp = fopen("employees.dat", "wb");
+    if (fp == NULL) {
+        printf("Error opening file\n");
+        return 1;
+    }
+    struct employee emp1 = {1, "John Doe", 50000};
+    struct employee emp2 = {2, "Jane Smith", 60000};
+    struct employee emp3 = {3, "Bob Johnson", 55000};
+    write_employee(fp, emp1);
+    write_employee(fp, emp2);
+    write_employee(fp, emp3);
+    fclose(fp);
+    fp = fopen("employees.dat", "rb");
+    if (fp == NULL) {
+        printf("Error opening file\n");
+        return 1;
+    }
+    struct employee emp = read_employee(fp, 2);
+    printf("Employee ID: %d\n", emp.id);
+    printf("Employee Name: %s\n", emp.name);
+    printf("Employee Salary: %.2f\n", emp.salary);
+    fclose(fp);
+    return 0;
+}
