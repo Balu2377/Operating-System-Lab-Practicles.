@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
+void organize_files(char* directory) {
+    DIR* dir = opendir(directory);
+    struct dirent* entry;
+    char new_dir[256];
+    if (dir == NULL) {
+        printf("Error opening directory.\n");
+        return;
+    }
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG) { 
+            char file_ext[256];
+            char* dot = strrchr(entry->d_name, '.'); 
+            if (dot != NULL) {
+                strcpy(file_ext, dot+1); 
+                sprintf(new_dir, "%s/%s", directory, file_ext); 
+                mkdir(new_dir, 0777); 
+                char old_file[256], new_file[256];
+                sprintf(old_file, "%s/%s", directory, entry->d_name); 
+                sprintf(new_file, "%s/%s", new_dir, entry->d_name); 
+                rename(old_file, new_file); 
+            }
+        }
+    }
+    closedir(dir);
+}
+int main() {
+    char directory[256];
+    printf("Enter directory path: ");
+    scanf("%s", directory);
+    organize_files(directory);
+    printf("Files organized in two level directory structure.\n");
+    return 0;
+}
